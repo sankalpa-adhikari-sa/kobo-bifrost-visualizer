@@ -2,20 +2,25 @@ import { useRef, useState, useEffect } from "react";
 import { Tldraw } from "tldraw";
 import "tldraw/tldraw.css";
 import { Button } from "@/components/ui/button.tsx";
-import { useTldrawSurveyShapes } from "@/components/useTldrawSurveyShapes.tsx";
+import { useTldrawSurveyInput } from "@/components/useTldrawSurveyInput.tsx";
 
 export default function TldrawComponent() {
   const editorRef = useRef(null);
-  const shapesdata = useTldrawSurveyShapes();
+  const { shapes, bindings } = useTldrawSurveyInput(); // Ensure correct destructuring
   const [isEditorReady, setIsEditorReady] = useState(false);
 
   useEffect(() => {
-    if (isEditorReady && shapesdata && shapesdata.length > 0) {
+    if (isEditorReady && shapes?.length) {
       const editor = editorRef.current;
-      editor.createShapes(shapesdata);
-      editor.selectAll();
+      if (editor) {
+        editor.createShapes(shapes);
+        if (bindings?.length) {
+          editor.createBindings(bindings);
+        }
+        editor.selectAll();
+      }
     }
-  }, [shapesdata, isEditorReady]);
+  }, [shapes, bindings, isEditorReady]);
 
   const handleMount = (editor) => {
     editorRef.current = editor;
@@ -25,8 +30,7 @@ export default function TldrawComponent() {
   const handleShowSelectedShapes = () => {
     const editor = editorRef.current;
     if (editor) {
-      const selectedShapes = editor.getSelectedShapes();
-      console.log("Selected Shapes:", selectedShapes);
+      console.log("Selected Shapes:", editor.getSelectedShapes());
     }
   };
 
