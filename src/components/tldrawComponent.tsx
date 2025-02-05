@@ -6,7 +6,7 @@ import { useTldrawSurveyInput } from "@/components/useTldrawSurveyInput.tsx";
 
 export default function TldrawComponent() {
   const editorRef = useRef(null);
-  const { shapes, bindings } = useTldrawSurveyInput(); // Ensure correct destructuring
+  const { shapes, bindings } = useTldrawSurveyInput();
   const [isEditorReady, setIsEditorReady] = useState(false);
 
   useEffect(() => {

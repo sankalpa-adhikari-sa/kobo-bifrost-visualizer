@@ -86,15 +86,20 @@ const XlsxReader: React.FC = () => {
 
       const sheetsData: Record<string, any[][]> = {};
       workbook.SheetNames.forEach((sheetName) => {
-        sheetsData[sheetName] = utils.sheet_to_json(
-          workbook.Sheets[sheetName],
-          { header: 1 },
+        const sheetData = utils.sheet_to_json(workbook.Sheets[sheetName], {
+          header: 1,
+        });
+
+        const filteredData = sheetData.filter((row: any[]) =>
+          row.some((cell) => cell !== null && cell !== ""),
         );
+
+        sheetsData[sheetName] = filteredData;
       });
 
       if (!validateXLSForm(sheetsData)) return;
 
-      setSheets(sheetsData); // Update the atom state with parsed data
+      setSheets(sheetsData);
       setActiveSheet(workbook.SheetNames[0] || null);
       toast.success("XLSForm uploaded successfully!");
     };
