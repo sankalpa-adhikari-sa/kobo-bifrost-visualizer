@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/form";
 import { LucideFileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
+import { useAtom } from "jotai";
+import { sheetsAtom } from "@/atoms/sheetsAtom";
 
 const fileSchema = z.object({
   file: z
@@ -21,16 +23,12 @@ const fileSchema = z.object({
     .refine((files) => files.length > 0, "File is required"),
 });
 
-interface XlsxReaderProps {
-  onFileParsed: (sheets: Record<string, any[][]>) => void;
-}
-
 const REQUIRED_SHEETS = ["survey", "choices"];
 const REQUIRED_SURVEY_COLUMNS = ["type", "name"];
 const REQUIRED_CHOICES_COLUMNS = ["list_name", "name"];
 
-const XlsxReader: React.FC<XlsxReaderProps> = ({ onFileParsed }) => {
-  const [sheets, setSheets] = useState<Record<string, any[][]>>({});
+const XlsxReader: React.FC = () => {
+  const [sheets, setSheets] = useAtom(sheetsAtom);
   const [activeSheet, setActiveSheet] = useState<string | null>(null);
 
   const form = useForm<{ file: FileList }>({
@@ -96,9 +94,8 @@ const XlsxReader: React.FC<XlsxReaderProps> = ({ onFileParsed }) => {
 
       if (!validateXLSForm(sheetsData)) return;
 
-      setSheets(sheetsData);
+      setSheets(sheetsData); // Update the atom state with parsed data
       setActiveSheet(workbook.SheetNames[0] || null);
-      onFileParsed(sheetsData);
       toast.success("XLSForm uploaded successfully!");
     };
     reader.readAsArrayBuffer(file);

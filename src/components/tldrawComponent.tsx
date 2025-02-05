@@ -1,24 +1,25 @@
-import React, { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Tldraw } from "tldraw";
 import "tldraw/tldraw.css";
 import { Button } from "@/components/ui/button.tsx";
+import { useTldrawSurveyShapes } from "@/components/useTldrawSurveyShapes.tsx";
 
 export default function TldrawComponent() {
   const editorRef = useRef(null);
+  const shapesdata = useTldrawSurveyShapes();
+  const [isEditorReady, setIsEditorReady] = useState(false);
+
+  useEffect(() => {
+    if (isEditorReady && shapesdata && shapesdata.length > 0) {
+      const editor = editorRef.current;
+      editor.createShapes(shapesdata);
+      editor.selectAll();
+    }
+  }, [shapesdata, isEditorReady]);
 
   const handleMount = (editor) => {
     editorRef.current = editor;
-
-    editor.createShape({
-      type: "text",
-      x: 200,
-      y: 200,
-      props: {
-        text: "Hello world!",
-      },
-    });
-
-    editor.selectAll();
+    setIsEditorReady(true);
   };
 
   const handleShowSelectedShapes = () => {
