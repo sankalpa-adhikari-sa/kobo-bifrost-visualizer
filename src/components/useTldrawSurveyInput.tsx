@@ -63,7 +63,7 @@ export function useTldrawSurveyInput() {
         "diamond",
         relevant,
         positionY,
-        300,
+        400,
         type,
       );
       shapes.push(diamondShape);
@@ -74,7 +74,7 @@ export function useTldrawSurveyInput() {
       "rectangle",
       name,
       positionY,
-      600,
+      900,
       type,
     );
     shapes.push(mainShape);
@@ -101,8 +101,8 @@ export function useTldrawSurveyInput() {
           `shape:condition-${nextName}`,
           "diamond",
           nextRelevant,
-          positionY + 150,
-          300,
+          positionY,
+          400,
           type,
         );
         shapes.push(nextDiamond);
@@ -113,7 +113,7 @@ export function useTldrawSurveyInput() {
         "rectangle",
         nextName,
         positionY + 150,
-        600,
+        900,
         type,
       );
       shapes.push(nextShape);
@@ -163,6 +163,10 @@ export function useTldrawSurveyInput() {
     }
 
     previousShape = mainShape;
+    if (diamondShape) {
+      shapes.push(diamondShape);
+      positionY += 100;
+    }
     positionY += 150;
   });
 

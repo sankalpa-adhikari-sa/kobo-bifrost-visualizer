@@ -137,22 +137,22 @@ const XlsxReader: React.FC = () => {
           </Button>
         </form>
       </Form>
-
-      {activeSheet && (
-        <div className="space-y-4">
-          <div className="flex space-x-2">
-            {Object.keys(sheets).map((sheetName) => (
-              <Button
-                key={sheetName}
-                variant={activeSheet === sheetName ? "default" : "outline"}
-                onClick={() => setActiveSheet(sheetName)}
-              >
-                {sheetName}
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/*Todo:Show detail stat about each sheets(survey, choices and settings)*/}
+      {/*{activeSheet && (*/}
+      {/*  <div className="space-y-4">*/}
+      {/*    <div className="flex space-x-2">*/}
+      {/*      {Object.keys(sheets).map((sheetName) => (*/}
+      {/*        <Button*/}
+      {/*          key={sheetName}*/}
+      {/*          variant={activeSheet === sheetName ? "default" : "outline"}*/}
+      {/*          onClick={() => setActiveSheet(sheetName)}*/}
+      {/*        >*/}
+      {/*          {sheetName}*/}
+      {/*        </Button>*/}
+      {/*      ))}*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*)}*/}
     </div>
   );
 };

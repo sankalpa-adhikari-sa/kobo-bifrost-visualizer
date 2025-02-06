@@ -56,7 +56,7 @@ export function createShape(id, shapeType, text, y, x, type) {
     id,
     type: "geo",
     props: {
-      w: shapeType === SHAPE_TYPES.DIAMOND ? 200 : 200,
+      w: shapeType === SHAPE_TYPES.DIAMOND ? 300 : 400,
       h: 50,
       geo: isCalculate ? SHAPE_TYPES.RHOMBUS : shapeType,
       color: isMetadata
