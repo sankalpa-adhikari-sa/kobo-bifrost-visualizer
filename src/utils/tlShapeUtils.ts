@@ -24,6 +24,7 @@ const EMOJI_MAP = {
   video: "🎥",
   geopoint: "📍",
   decimal: "💯",
+  calculate: "➗",
 };
 
 const ARROW_COLORS = {
