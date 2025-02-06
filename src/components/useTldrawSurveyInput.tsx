@@ -1,6 +1,10 @@
 import { useAtom } from "jotai";
 import { sheetsAtom } from "@/atoms/sheetsAtom.ts";
-
+import {
+  createShape,
+  createArrow,
+  createBindings,
+} from "@/utils/tlShapeUtils.ts";
 export function useTldrawSurveyInput() {
   const [sheets] = useAtom(sheetsAtom);
 
@@ -45,7 +49,7 @@ export function useTldrawSurveyInput() {
     const label = labelIndex >= 0 ? row[labelIndex] : null;
     const relevant = relevantIndex >= 0 ? row[relevantIndex] : null;
 
-    // **Ignore group types entirely**
+    // Todo: group the question, currently ignoring groups for prototyping.
     if (type === "begin_group" || type === "end_group") {
       return;
     }
@@ -60,11 +64,19 @@ export function useTldrawSurveyInput() {
         relevant,
         positionY,
         300,
+        type,
       );
       shapes.push(diamondShape);
     }
 
-    mainShape = createShape(`shape:${name}`, "rectangle", name, positionY, 600);
+    mainShape = createShape(
+      `shape:${name}`,
+      "rectangle",
+      name,
+      positionY,
+      600,
+      type,
+    );
     shapes.push(mainShape);
 
     let nextRowIndex = rowIndex + 1;
@@ -91,6 +103,7 @@ export function useTldrawSurveyInput() {
           nextRelevant,
           positionY + 150,
           300,
+          type,
         );
         shapes.push(nextDiamond);
       }
@@ -101,6 +114,7 @@ export function useTldrawSurveyInput() {
         nextName,
         positionY + 150,
         600,
+        type,
       );
       shapes.push(nextShape);
     }
@@ -153,110 +167,4 @@ export function useTldrawSurveyInput() {
   });
 
   return { shapes, bindings };
-}
-function createShape(id, shapeType, text, y, x) {
-  return {
-    x: x,
-    y: y,
-    rotation: 0,
-    isLocked: false,
-    opacity: 1,
-    meta: {},
-    id: id,
-    type: "geo",
-    props: {
-      w: shapeType === "diamond" ? 200 : 200,
-      h: 50,
-      geo: shapeType,
-      color: shapeType === "diamond" ? "blue" : "black",
-      labelColor: "black",
-      fill: "none",
-      dash: "draw",
-      size: "m",
-      font: "draw",
-      text: text || "(No Label)",
-      align: "middle",
-      verticalAlign: "middle",
-      growY: 0,
-      url: "",
-    },
-    parentId: "page:page",
-    index: "aC8Cw",
-    typeName: "shape",
-  };
-}
-
-// Function to create arrows
-function createArrow(startShape, endShape, direction = "vertical") {
-  return {
-    x:
-      direction === "horizontal"
-        ? startShape.x + startShape.props.w + 100
-        : startShape.x,
-    y:
-      direction === "horizontal"
-        ? startShape.y
-        : startShape.y + startShape.props.h / 2,
-    rotation: 0,
-    isLocked: false,
-    opacity: 1,
-    meta: {},
-    id: `shape:arrow-${startShape.id}-to-${endShape.id}`,
-    type: "arrow",
-    props: {
-      dash: "draw",
-      size: "m",
-      fill: "none",
-      color: "light-violet",
-      labelColor: "black",
-      bend: 0,
-      start: { x: 0, y: 0 },
-      end: {
-        x: direction === "horizontal" ? endShape.x - startShape.x : 0,
-        y: direction === "horizontal" ? 0 : endShape.y - startShape.y,
-      },
-      arrowheadStart: "none",
-      arrowheadEnd: "arrow",
-      text: "",
-      labelPosition: 0.5,
-      font: "draw",
-      scale: 1,
-    },
-    parentId: "page:page",
-    index: "a64b9",
-    typeName: "shape",
-  };
-}
-
-function createBindings(arrow, fromShape, toShape) {
-  return [
-    {
-      meta: {},
-      id: `binding:${arrow.id}-start`,
-      type: "arrow",
-      fromId: arrow.id,
-      toId: fromShape.id,
-      props: {
-        isPrecise: false,
-        isExact: false,
-        normalizedAnchor: { x: 0.5, y: 0.5 },
-        terminal: "start",
-      },
-      typeName: "binding",
-    },
-    {
-      meta: {},
-      id: `binding:${arrow.id}-end`,
-      type: "arrow",
-      fromId: arrow.id,
-      toId: toShape.id,
-      props: {
-        isPrecise: false,
-        isExact: false,
-        normalizedAnchor: { x: 0.5, y: 0.5 },
-        terminal: "end",
-      },
-      typeName: "binding",
-    },
-  ];
 }
