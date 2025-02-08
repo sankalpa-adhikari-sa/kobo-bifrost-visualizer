@@ -2,6 +2,7 @@ const SHAPE_TYPES = {
   DIAMOND: "diamond",
   RHOMBUS: "rhombus",
   RECTANGLE: "rectangle",
+  OVAL: "oval",
 };
 
 const METADATA_TYPES = [
@@ -42,10 +43,31 @@ function getEmoji(type) {
   return EMOJI_MAP[type] || "";
 }
 
-export function createShape(id, shapeType, text, y, x, type) {
-  const isMetadata = METADATA_TYPES.includes(text);
+export function createShape(id, shapeType, text, y, x, type, metadata) {
+  const isKoboMetadata = METADATA_TYPES.includes(text);
   const isCalculate = type === "calculate";
+
   const emoji = getEmoji(type);
+
+  const defaultMetadata = {
+    constraint: "",
+    constraintMessage: "",
+    label: "",
+    hint: "",
+    guidanceHint: "",
+    readonly: "",
+    defaultValue: "",
+    required: "",
+    requiredMessage: "",
+    note: "",
+    appearance: "",
+    relevant: "",
+  };
+
+  const shapeMetadata = { ...defaultMetadata, ...(metadata || {}) };
+
+  const hasConstraint =
+    shapeMetadata.constraint && shapeMetadata.constraint.trim() !== "";
 
   return {
     x,
@@ -53,21 +75,27 @@ export function createShape(id, shapeType, text, y, x, type) {
     rotation: 0,
     isLocked: false,
     opacity: 1,
-    meta: {},
+    meta: shapeMetadata,
     id,
     type: "geo",
     props: {
-      w: shapeType === SHAPE_TYPES.DIAMOND ? 300 : 400,
+      w: hasConstraint ? 400 : shapeType === SHAPE_TYPES.DIAMOND ? 300 : 400,
       h: 50,
-      geo: isCalculate ? SHAPE_TYPES.RHOMBUS : shapeType,
-      color: isMetadata
-        ? "yellow"
-        : shapeType === SHAPE_TYPES.DIAMOND
-          ? "blue"
-          : "black",
+      geo: hasConstraint
+        ? SHAPE_TYPES.OVAL
+        : isCalculate
+          ? SHAPE_TYPES.RHOMBUS
+          : shapeType,
+      color: hasConstraint
+        ? "light-red"
+        : isKoboMetadata
+          ? "yellow"
+          : shapeType === SHAPE_TYPES.DIAMOND
+            ? "blue"
+            : "black",
       labelColor: "black",
-      fill: isMetadata ? "pattern" : "none",
-      dash: "draw",
+      fill: isKoboMetadata ? "pattern" : "none",
+      dash: hasConstraint ? "dashed" : "draw",
       size: "m",
       font: "draw",
       text: `${emoji} ${text}`,
