@@ -3,6 +3,8 @@ const SHAPE_TYPES = {
   RHOMBUS: "rhombus",
   RECTANGLE: "rectangle",
   OVAL: "oval",
+  CLOUD: "cloud",
+  TRAPEZOID: "trapezoid",
 };
 
 const METADATA_TYPES = [
@@ -28,13 +30,48 @@ const EMOJI_MAP = {
   calculate: "➗",
 };
 
-const ARROW_COLORS = {
-  HORIZONTAL_DIAMOND: "light-green",
-  DEFAULT: "light-violet",
-};
+const STYLE_CONFIG = {
+  default: {
+    width: 400,
+    height: 50,
+    color: "black",
+    labelColor: "black",
+    fill: "none",
+    dash: "draw",
+    size: "m",
+    font: "draw",
+  },
+  conditions: {
+    note: {
+      shape: SHAPE_TYPES.CLOUD,
+      color: "light-green",
+      fill: "solid",
+    },
+    constraint: {
+      shape: SHAPE_TYPES.RHOMBUS,
+      color: "light-red",
+      width: 400,
+      dash: "dashed",
+    },
+    calculate: {
+      shape: SHAPE_TYPES.RECTANGLE,
 
-const ARROW_LABELS = {
-  HORIZONTAL_DIAMOND: "Yes",
+      fill: "solid",
+      color: "light-blue",
+    },
+    metadata: {
+      color: "yellow",
+      fill: "pattern",
+    },
+    diamond: {
+      shape: SHAPE_TYPES.DIAMOND,
+      color: "blue",
+      width: 300,
+    },
+    selectMultiple: {
+      shape: SHAPE_TYPES.TRAPEZOID,
+    },
+  },
 };
 
 function getEmoji(type) {
@@ -43,31 +80,51 @@ function getEmoji(type) {
   return EMOJI_MAP[type] || "";
 }
 
+function getShapeStyle(shapeType, type, metadata = {}, text) {
+  const baseStyle = { ...STYLE_CONFIG.default };
+  const conditions = [];
+
+  if (type === "note") conditions.push(STYLE_CONFIG.conditions.note);
+  if (type.startsWith("select_one"))
+    conditions.push(STYLE_CONFIG.conditions.selectMultiple);
+  if (metadata.constraint?.trim())
+    conditions.push(STYLE_CONFIG.conditions.constraint);
+  if (type === "calculate") conditions.push(STYLE_CONFIG.conditions.calculate);
+  if (METADATA_TYPES.includes(text))
+    conditions.push(STYLE_CONFIG.conditions.metadata);
+  if (shapeType === SHAPE_TYPES.DIAMOND)
+    conditions.push(STYLE_CONFIG.conditions.diamond);
+
+  const finalStyle = conditions.reduce(
+    (acc, condition) => ({
+      ...acc,
+      ...condition,
+    }),
+    baseStyle,
+  );
+
+  return finalStyle;
+}
+
+const DEFAULT_METADATA = {
+  constraint: "",
+  constraintMessage: "",
+  label: "",
+  hint: "",
+  guidanceHint: "",
+  readonly: "",
+  defaultValue: "",
+  required: "",
+  requiredMessage: "",
+  note: "",
+  appearance: "",
+  relevant: "",
+};
+
 export function createShape(id, shapeType, text, y, x, type, metadata) {
-  const isKoboMetadata = METADATA_TYPES.includes(text);
-  const isCalculate = type === "calculate";
-
+  const shapeMetadata = { ...DEFAULT_METADATA, ...(metadata || {}) };
   const emoji = getEmoji(type);
-
-  const defaultMetadata = {
-    constraint: "",
-    constraintMessage: "",
-    label: "",
-    hint: "",
-    guidanceHint: "",
-    readonly: "",
-    defaultValue: "",
-    required: "",
-    requiredMessage: "",
-    note: "",
-    appearance: "",
-    relevant: "",
-  };
-
-  const shapeMetadata = { ...defaultMetadata, ...(metadata || {}) };
-
-  const hasConstraint =
-    shapeMetadata.constraint && shapeMetadata.constraint.trim() !== "";
+  const style = getShapeStyle(shapeType, type, shapeMetadata, text);
 
   return {
     x,
@@ -79,25 +136,15 @@ export function createShape(id, shapeType, text, y, x, type, metadata) {
     id,
     type: "geo",
     props: {
-      w: hasConstraint ? 400 : shapeType === SHAPE_TYPES.DIAMOND ? 300 : 400,
-      h: 50,
-      geo: hasConstraint
-        ? SHAPE_TYPES.OVAL
-        : isCalculate
-          ? SHAPE_TYPES.RHOMBUS
-          : shapeType,
-      color: hasConstraint
-        ? "light-red"
-        : isKoboMetadata
-          ? "yellow"
-          : shapeType === SHAPE_TYPES.DIAMOND
-            ? "blue"
-            : "black",
-      labelColor: "black",
-      fill: isKoboMetadata ? "pattern" : "none",
-      dash: hasConstraint ? "dashed" : "draw",
-      size: "m",
-      font: "draw",
+      w: style.width,
+      h: style.height,
+      geo: style.shape || shapeType,
+      color: style.color,
+      labelColor: style.labelColor,
+      fill: style.fill,
+      dash: style.dash,
+      size: style.size,
+      font: style.font,
       text: `${emoji} ${text}`,
       align: "middle",
       verticalAlign: "middle",
@@ -110,9 +157,33 @@ export function createShape(id, shapeType, text, y, x, type, metadata) {
   };
 }
 
+const ARROW_STYLES = {
+  default: {
+    color: "light-violet",
+    dash: "draw",
+    size: "m",
+    fill: "none",
+    labelColor: "black",
+    bend: 0,
+    arrowheadStart: "none",
+    arrowheadEnd: "arrow",
+    font: "draw",
+    scale: 1,
+  },
+  horizontalDiamond: {
+    color: "light-green",
+    text: "Yes",
+  },
+};
+
 export function createArrow(startShape, endShape, direction = "vertical") {
   const isHorizontal = direction === "horizontal";
   const isDiamond = startShape.props.geo === SHAPE_TYPES.DIAMOND;
+
+  const style = {
+    ...ARROW_STYLES.default,
+    ...(isHorizontal && isDiamond ? ARROW_STYLES.horizontalDiamond : {}),
+  };
 
   return {
     x: isHorizontal ? startShape.x + startShape.props.w + 100 : startShape.x,
@@ -124,26 +195,13 @@ export function createArrow(startShape, endShape, direction = "vertical") {
     id: `shape:arrow-${startShape.id}-to-${endShape.id}`,
     type: "arrow",
     props: {
-      dash: "draw",
-      size: "m",
-      fill: "none",
-      color:
-        isHorizontal && isDiamond
-          ? ARROW_COLORS.HORIZONTAL_DIAMOND
-          : ARROW_COLORS.DEFAULT,
-      labelColor: "black",
-      bend: 0,
+      ...style,
       start: { x: 0, y: 0 },
       end: {
         x: isHorizontal ? endShape.x - startShape.x : 0,
         y: isHorizontal ? 0 : endShape.y - startShape.y,
       },
-      arrowheadStart: "none",
-      arrowheadEnd: "arrow",
-      text: isHorizontal && isDiamond ? ARROW_LABELS.HORIZONTAL_DIAMOND : "",
       labelPosition: 0.5,
-      font: "draw",
-      scale: 1,
     },
     parentId: "page:page",
     index: "a64b9",

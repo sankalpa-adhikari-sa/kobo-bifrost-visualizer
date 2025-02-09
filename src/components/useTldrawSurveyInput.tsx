@@ -93,7 +93,7 @@ export function useTldrawSurveyInput() {
     const readonly = readonlyIndex >= 0 ? row[readonlyIndex] : null;
     const relevant = relevantIndex >= 0 ? row[relevantIndex] : null;
     const appearance = appearanceIndex >= 0 ? row[appearanceIndex] : null;
-    const defaultValue = defaultIndex >= 0 ? row[defaultIndex] : null; // Renamed to defaultValue for clarity
+    const defaultValue = defaultIndex >= 0 ? row[defaultIndex] : null;
     const constraint = constraintIndex >= 0 ? row[constraintIndex] : null;
     const constraintMessage =
       constraintMessageIndex >= 0 ? row[constraintMessageIndex] : null;
@@ -144,7 +144,7 @@ export function useTldrawSurveyInput() {
 
     mainShape = createShape(
       `shape:${name}`,
-      "rectangle",
+      "rhombus",
       name,
       positionY,
       900,
@@ -184,7 +184,7 @@ export function useTldrawSurveyInput() {
 
       nextShape = createShape(
         `shape:${nextName}`,
-        "rectangle",
+        "rhombus",
         nextName,
         positionY + 150,
         900,

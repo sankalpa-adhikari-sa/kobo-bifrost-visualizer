@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="pt-4 pl-4">
-      <h1 className="text-xl font-bold mb-2">XLSForm</h1>
+      <h1 className="text-xl font-bold mb-2">XLSForm Visualizer</h1>
       <XlsxReader />
       <TldrawComponent />
     </div>
