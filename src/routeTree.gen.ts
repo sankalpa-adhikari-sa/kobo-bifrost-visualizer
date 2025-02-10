@@ -8,63 +8,142 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as homeHomeImport } from './routes/(home)/_home'
+import { Route as homeHomeIndexImport } from './routes/(home)/_home.index'
+import { Route as homeHomeSheetsImport } from './routes/(home)/_home.sheets'
+
+// Create Virtual Routes
+
+const homeImport = createFileRoute('/(home)')()
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
+const homeRoute = homeImport.update({
+  id: '/(home)',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const homeHomeRoute = homeHomeImport.update({
+  id: '/_home',
+  getParentRoute: () => homeRoute,
+} as any)
+
+const homeHomeIndexRoute = homeHomeIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => homeHomeRoute,
+} as any)
+
+const homeHomeSheetsRoute = homeHomeSheetsImport.update({
+  id: '/sheets',
+  path: '/sheets',
+  getParentRoute: () => homeHomeRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(home)': {
+      id: '/(home)'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+      preLoaderRoute: typeof homeImport
       parentRoute: typeof rootRoute
+    }
+    '/(home)/_home': {
+      id: '/(home)/_home'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof homeHomeImport
+      parentRoute: typeof homeRoute
+    }
+    '/(home)/_home/sheets': {
+      id: '/(home)/_home/sheets'
+      path: '/sheets'
+      fullPath: '/sheets'
+      preLoaderRoute: typeof homeHomeSheetsImport
+      parentRoute: typeof homeHomeImport
+    }
+    '/(home)/_home/': {
+      id: '/(home)/_home/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof homeHomeIndexImport
+      parentRoute: typeof homeHomeImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface homeHomeRouteChildren {
+  homeHomeSheetsRoute: typeof homeHomeSheetsRoute
+  homeHomeIndexRoute: typeof homeHomeIndexRoute
+}
+
+const homeHomeRouteChildren: homeHomeRouteChildren = {
+  homeHomeSheetsRoute: homeHomeSheetsRoute,
+  homeHomeIndexRoute: homeHomeIndexRoute,
+}
+
+const homeHomeRouteWithChildren = homeHomeRoute._addFileChildren(
+  homeHomeRouteChildren,
+)
+
+interface homeRouteChildren {
+  homeHomeRoute: typeof homeHomeRouteWithChildren
+}
+
+const homeRouteChildren: homeRouteChildren = {
+  homeHomeRoute: homeHomeRouteWithChildren,
+}
+
+const homeRouteWithChildren = homeRoute._addFileChildren(homeRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof homeHomeIndexRoute
+  '/sheets': typeof homeHomeSheetsRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/sheets': typeof homeHomeSheetsRoute
+  '/': typeof homeHomeIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
+  '/(home)': typeof homeRouteWithChildren
+  '/(home)/_home': typeof homeHomeRouteWithChildren
+  '/(home)/_home/sheets': typeof homeHomeSheetsRoute
+  '/(home)/_home/': typeof homeHomeIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/sheets'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/sheets' | '/'
+  id:
+    | '__root__'
+    | '/(home)'
+    | '/(home)/_home'
+    | '/(home)/_home/sheets'
+    | '/(home)/_home/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  homeRoute: typeof homeRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  homeRoute: homeRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +156,30 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/(home)"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/(home)": {
+      "filePath": "(home)",
+      "children": [
+        "/(home)/_home"
+      ]
+    },
+    "/(home)/_home": {
+      "filePath": "(home)/_home.tsx",
+      "parent": "/(home)",
+      "children": [
+        "/(home)/_home/sheets",
+        "/(home)/_home/"
+      ]
+    },
+    "/(home)/_home/sheets": {
+      "filePath": "(home)/_home.sheets.tsx",
+      "parent": "/(home)/_home"
+    },
+    "/(home)/_home/": {
+      "filePath": "(home)/_home.index.tsx",
+      "parent": "/(home)/_home"
     }
   }
 }

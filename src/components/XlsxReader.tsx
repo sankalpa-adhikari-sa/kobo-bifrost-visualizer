@@ -105,6 +105,7 @@ const XlsxReader: React.FC = () => {
     };
     reader.readAsArrayBuffer(file);
   };
+  console.log(sheets);
 
   return (
     <div className="flex flex-row space-x-2">
