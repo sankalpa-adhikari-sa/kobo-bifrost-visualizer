@@ -180,7 +180,7 @@ export default function TldrawComponent() {
   };
 
   return (
-    <div className="absolute inset-0 mt-[90px]">
+    <div className="absolute inset-0 mt-[64px]">
       <Tldraw
         persistenceKey="xlsform"
         onMount={handleMount}

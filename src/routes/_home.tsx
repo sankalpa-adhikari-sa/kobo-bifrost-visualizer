@@ -1,22 +1,14 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import XlsxReader from "@/components/XlsxReader.tsx";
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { UploadDialog } from "@/components/upload-dialog.tsx";
 
-export const Route = createFileRoute("/(home)/_home")({
+export const Route = createFileRoute("/_home")({
   component: HomeLayout,
 });
 
@@ -29,7 +21,7 @@ function HomeLayout() {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <XlsxReader />
+            <UploadDialog />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

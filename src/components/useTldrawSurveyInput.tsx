@@ -5,6 +5,7 @@ import {
   createArrow,
   createBindings,
 } from "@/utils/tlShapeUtils.ts";
+import { extractSurveyData } from "@/utils/surveyUtils.ts";
 export function useTldrawSurveyInput() {
   const [sheets] = useAtom(sheetsAtom);
 
@@ -36,44 +37,8 @@ export function useTldrawSurveyInput() {
   const labelIndex = headers.findIndex(
     (header) => typeof header === "string" && header.startsWith("label"),
   );
-  const hintIndex = headers.findIndex(
-    (header) => typeof header === "string" && header.startsWith("hint"),
-  );
-  const guidanceHintIndex = headers.findIndex(
-    (header) =>
-      typeof header === "string" && header.startsWith("guidance_hint"),
-  );
-  const requiredIndex = headers.indexOf("required");
-  const requiredMessageIndex = headers.findIndex(
-    (header) =>
-      typeof header === "string" && header.startsWith("required_message"),
-  );
-  const readonlyIndex = headers.indexOf("readonly");
+
   const relevantIndex = headers.indexOf("relevant");
-  const appearanceIndex = headers.indexOf("appearance");
-  const defaultIndex = headers.indexOf("default");
-  const constraintIndex = headers.indexOf("constraint");
-  const constraintMessageIndex = headers.findIndex(
-    (header) =>
-      typeof header === "string" && header.startsWith("constraint_message"),
-  );
-  const calculationIndex = headers.indexOf("calculation");
-  const triggerIndex = headers.indexOf("trigger");
-  const choiceFilterIndex = headers.indexOf("choice_filter");
-  const parametersIndex = headers.indexOf("parameters");
-  const repeatCountIndex = headers.indexOf("repeat_count");
-  const imageIndex = headers.findIndex(
-    (header) => typeof header === "string" && header.startsWith("image"),
-  );
-  const audioIndex = headers.findIndex(
-    (header) => typeof header === "string" && header.startsWith("audio"),
-  );
-  const videoIndex = headers.findIndex(
-    (header) => typeof header === "string" && header.startsWith("video"),
-  );
-  const noteIndex = headers.findIndex(
-    (header) => typeof header === "string" && header.startsWith("note"),
-  );
 
   if (typeIndex === -1 || nameIndex === -1 || labelIndex === -1) {
     console.error("Error: Missing mandatory columns in header row.");
@@ -81,74 +46,54 @@ export function useTldrawSurveyInput() {
   }
 
   surveySheet.slice(1).forEach((row, rowIndex, array) => {
-    const type = row[typeIndex];
-    const name = row[nameIndex];
-
-    const label = labelIndex >= 0 ? row[labelIndex] : null;
-    const hint = hintIndex >= 0 ? row[hintIndex] : null;
-    const guidanceHint = guidanceHintIndex >= 0 ? row[guidanceHintIndex] : null;
-    const required = requiredIndex >= 0 ? row[requiredIndex] : null;
-    const requiredMessage =
-      requiredMessageIndex >= 0 ? row[requiredMessageIndex] : null;
-    const readonly = readonlyIndex >= 0 ? row[readonlyIndex] : null;
-    const relevant = relevantIndex >= 0 ? row[relevantIndex] : null;
-    const appearance = appearanceIndex >= 0 ? row[appearanceIndex] : null;
-    const defaultValue = defaultIndex >= 0 ? row[defaultIndex] : null;
-    const constraint = constraintIndex >= 0 ? row[constraintIndex] : null;
-    const constraintMessage =
-      constraintMessageIndex >= 0 ? row[constraintMessageIndex] : null;
-    const calculation = calculationIndex >= 0 ? row[calculationIndex] : null;
-    const trigger = triggerIndex >= 0 ? row[triggerIndex] : null;
-    const choiceFilter = choiceFilterIndex >= 0 ? row[choiceFilterIndex] : null;
-    const parameters = parametersIndex >= 0 ? row[parametersIndex] : null;
-    const repeatCount = repeatCountIndex >= 0 ? row[repeatCountIndex] : null;
-    const image = imageIndex >= 0 ? row[imageIndex] : null;
-    const audio = audioIndex >= 0 ? row[audioIndex] : null;
-    const video = videoIndex >= 0 ? row[videoIndex] : null;
-    const note = noteIndex >= 0 ? row[noteIndex] : null;
+    const allData = extractSurveyData(headers, row);
 
     const metadata = {
-      constraint: constraint ? String(constraint) : "",
-      constraintMessage: constraintMessage ? String(constraintMessage) : "",
-      label: label ? String(label) : "",
-      hint: hint ? String(hint) : "",
-      guidanceHint: guidanceHint ? String(guidanceHint) : "",
-      readonly: readonly ? String(readonly) : "",
-      defaultValue: defaultValue ? String(defaultValue) : "",
-      required: required ? String(required) : "",
-      requiredMessage: requiredMessage ? String(requiredMessage) : "",
-      note: note ? String(note) : "",
-      appearance: appearance ? String(appearance) : "",
-      relevant: relevant ? String(relevant) : "",
+      constraint: allData.constraint ? String(allData.constraint) : "",
+      constraintMessage: allData.constraintMessage
+        ? String(allData.constraintMessage)
+        : "",
+      label: allData.label ? String(allData.label) : "",
+      hint: allData.hint ? String(allData.hint) : "",
+      guidanceHint: allData.guidanceHint ? String(allData.guidanceHint) : "",
+      readonly: allData.readonly ? String(allData.readonly) : "",
+      defaultValue: allData.defaultValue ? String(allData.defaultValue) : "",
+      required: allData.required ? String(allData.required) : "",
+      requiredMessage: allData.requiredMessage
+        ? String(allData.requiredMessage)
+        : "",
+      note: allData.note ? String(allData.note) : "",
+      appearance: allData.appearance ? String(allData.appearance) : "",
+      relevant: allData.relevant ? String(allData.relevant) : "",
     };
 
     // Todo: group the question, currently ignoring groups for prototyping.
-    if (type === "begin_group" || type === "end_group") {
+    if (allData.type === "begin_group" || allData.type === "end_group") {
       return;
     }
 
     let relevantShape = null;
     let mainShape = null;
 
-    if (relevant) {
+    if (allData.relevant) {
       relevantShape = createShape(
-        `shape:condition-${name}`,
+        `shape:condition-${allData.name}`,
         "diamond",
-        relevant,
+        allData.relevant,
         positionY,
         400,
-        type,
+        allData.type,
       );
       shapes.push(relevantShape);
     }
 
     mainShape = createShape(
-      `shape:${name}`,
+      `shape:${allData.name}`,
       "rhombus",
-      name,
+      allData.name,
       positionY,
       900,
-      type,
+      allData.type,
       metadata,
     );
     shapes.push(mainShape);
@@ -177,7 +122,7 @@ export function useTldrawSurveyInput() {
           nextRelevant,
           positionY,
           400,
-          type,
+          allData.type,
         );
         shapes.push(nextDiamond);
       }
@@ -188,7 +133,7 @@ export function useTldrawSurveyInput() {
         nextName,
         positionY + 150,
         900,
-        type,
+        allData.type,
         metadata,
       );
       shapes.push(nextShape);

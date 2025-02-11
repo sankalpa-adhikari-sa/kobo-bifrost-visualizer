@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Link } from "@tanstack/react-router";
 import {
   BookOpen,
   Command,
@@ -12,11 +13,9 @@ import {
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -32,44 +31,44 @@ const data = {
   navMain: [
     {
       title: "Survey",
-      url: "#",
+      url: "/survey",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "Information",
-          url: "#",
+          url: "/information",
         },
         {
-          title: "Relevent",
-          url: "#",
+          title: "Relevant",
+          url: "/relevant",
         },
         {
-          title: "Constraints",
-          url: "#",
+          title: "Constraint",
+          url: "/constraint",
         },
       ],
     },
 
     {
       title: "Choices",
-      url: "#",
+      url: "/choices",
       icon: BookOpen,
       items: [
         {
           title: "Information",
-          url: "#",
+          url: "/choices",
         },
       ],
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: Settings2,
       items: [
         {
           title: "Information",
-          url: "#",
+          url: "/settings",
         },
       ],
     },
@@ -95,7 +94,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Command className="size-4" />
                 </div>
@@ -103,19 +102,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-semibold">Kobo Bifrost</span>
                   <span className="truncate text-xs">Visualizer</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter className="z-40">
-        <NavUser user={data.user} />
-      </SidebarFooter>
     </Sidebar>
   );
 }
