@@ -16,6 +16,7 @@ import { LucideFileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
 import { useAtom } from "jotai";
 import { sheetsAtom } from "@/atoms/sheetsAtom";
+import { fileAtom } from "@/atoms/fileAtom.ts";
 
 const fileSchema = z.object({
   file: z
@@ -29,6 +30,7 @@ const REQUIRED_CHOICES_COLUMNS = ["list_name", "name"];
 
 const XlsxReader: React.FC = () => {
   const [sheets, setSheets] = useAtom(sheetsAtom);
+  const [fileInfo, setFileInfo] = useAtom(fileAtom);
   const [activeSheet, setActiveSheet] = useState<string | null>(null);
 
   const form = useForm<{ file: FileList }>({
@@ -76,6 +78,7 @@ const XlsxReader: React.FC = () => {
   const onSubmit = (data: { file: FileList }) => {
     const file = data.file[0];
     if (!file) return;
+    setFileInfo({ name: file.name, size: file.size });
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -137,22 +140,6 @@ const XlsxReader: React.FC = () => {
           </Button>
         </form>
       </Form>
-      {/*Todo:Show detail stat about each sheets(survey, choices and settings)*/}
-      {/*{activeSheet && (*/}
-      {/*  <div className="space-y-4">*/}
-      {/*    <div className="flex space-x-2">*/}
-      {/*      {Object.keys(sheets).map((sheetName) => (*/}
-      {/*        <Button*/}
-      {/*          key={sheetName}*/}
-      {/*          variant={activeSheet === sheetName ? "default" : "outline"}*/}
-      {/*          onClick={() => setActiveSheet(sheetName)}*/}
-      {/*        >*/}
-      {/*          {sheetName}*/}
-      {/*        </Button>*/}
-      {/*      ))}*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*)}*/}
     </div>
   );
 };
