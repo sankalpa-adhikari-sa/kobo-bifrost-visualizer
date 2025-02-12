@@ -146,11 +146,11 @@ const QuestionCard = ({ question, surveyMap }) => {
             </code>
           </div>
         )}
-        {question.constraintMsg && (
+        {question.constraintMessage && (
           <div>
             <strong className="font-medium">Constraint Message:</strong>{" "}
             <DynamicLabel
-              label={question.constraintMsg}
+              label={question.constraintMessage}
               surveyMap={surveyMap}
             />
           </div>
@@ -324,10 +324,7 @@ function ConstraintPage() {
   );
 
   const constraintRows = surveyData.filter(
-    (rowData) =>
-      rowData.constraint ||
-      rowData.constraintMsg ||
-      (rowData.label && extractVariables(rowData.label).length > 0),
+    (rowData) => rowData.constraint || rowData.constraintMsg,
   );
 
   const questionTypes = Array.from(
