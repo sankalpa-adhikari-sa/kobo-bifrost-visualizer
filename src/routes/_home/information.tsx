@@ -7,7 +7,7 @@ import {
   ClipboardList,
   Calculator,
   Database,
-  CalendarIcon,
+  NotebookIcon,
   Layers,
 } from "lucide-react";
 
@@ -194,7 +194,7 @@ const ValidationStats: React.FC<{ surveyData: SurveyQuestion[] }> = ({
       </CardHeader>
       <CardContent>
         <ChartContainer
-          className="min-h-[200px] max-h-[800px]"
+          className="min-h-[200px] max-h-[800px] w-full"
           config={CHART_CONFIG}
         >
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20 }}>
@@ -270,7 +270,7 @@ const QuestionTypes: React.FC<{ surveyData: SurveyQuestion[] }> = ({
       </CardHeader>
       <CardContent>
         <ChartContainer
-          className="min-h-[200px] max-h-[600px]"
+          className="min-h-[200px] max-h-[600px] w-full"
           config={{ count: CHART_CONFIG.count }}
         >
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20 }}>
@@ -505,7 +505,7 @@ function InformationPage() {
         <StatCard
           title="Notes"
           value={noteCount}
-          icon={<CalendarIcon className="h-4 w-4 text-muted-foreground" />}
+          icon={<NotebookIcon className="h-4 w-4 text-muted-foreground" />}
         />
       </div>
 

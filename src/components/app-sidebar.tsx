@@ -31,7 +31,7 @@ const data = {
   navMain: [
     {
       title: "Survey",
-      url: "/survey",
+      url: "/information",
       icon: SquareTerminal,
       isActive: true,
       items: [

@@ -35,10 +35,14 @@ export const Route = createFileRoute("/_home/constraint")({
 });
 
 const getBaseType = (type: string) => {
-  const baseType = type.split(" ")[0];
-  return baseType;
+  if (type.startsWith("select_one ")) {
+    return "select_one";
+  }
+  if (type.startsWith("select_multiple ")) {
+    return "select_multiple";
+  }
+  return type.split(" ")[0];
 };
-
 const VariableHoverCard = ({ variable, surveyMap }) => {
   const variableData = surveyMap[variable];
 
@@ -136,7 +140,8 @@ const QuestionCard = ({ question, surveyMap }) => {
           <strong className="font-medium">Name:</strong> {question.name}
         </div>
         <div>
-          <strong className="font-medium">Type:</strong> {question.type}
+          <strong className="font-medium">Type:</strong>{" "}
+          {getBaseType(question.type)}
         </div>
         {question.constraint && (
           <div>
