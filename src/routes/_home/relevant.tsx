@@ -304,7 +304,6 @@ function RelevantPage() {
   const surveyMap = Object.fromEntries(
     surveyData.map((row) => [row.name, row]),
   );
-  console.log(surveyMap);
 
   const relevantRows = surveyData.filter(
     (rowData) =>
